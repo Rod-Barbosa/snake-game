@@ -57,10 +57,8 @@ Users should be able to Code/Understand:
 
 ### Links
 
-- Solution Github URL: [https://github.com/Rod-Barbosa/lead-saver-chrome-extension](https://github.com/Rod-Barbosa/lead-saver-chrome-extension)
-- Live Site URL: [https://rodrigo-lead-saver-chrome-extension.netlify.app/](https://rodrigo-lead-saver-chrome-extension.netlify.app/)
-- May hte next one do a better job at translating a browser extension into a website. 
-- If you want to install and see how it works, click the github link, download the files, open your google chrome extensions and point the downloads folder. It should do the trick.
+- Solution Github URL: [https://github.com/Rod-Barbosa/snake-game](https://github.com/Rod-Barbosa/snake-game)
+- Live Site URL: [https://snake-game-wheat.vercel.app/](https://snake-game-wheat.vercel.app/)
 
 ## My process
 
@@ -69,63 +67,61 @@ Users should be able to Code/Understand:
 - Semantic HTML5 markup
 - CSS custom properties
 - JavaScript
-- Chrome Dev tools
-
 
 ### What I learned
-Making a chrome extension is much easier than it looks like.
+Resetting a game is much harder than it looks.
+Also, for some reason netlify stopped working so I'm using Vercel https://vercel.com/dashboard
 
-To see how you can add code snippets, see below:
-
-This is the only "hard coded" part of my html list of leads
-```html
-        <ul id="ul-el">
-        </ul>
-```
-The list is rendered dynamicly, after being turned into a string. The string conversion happens for performance purposes, given that innerHTML is taxing. Changing the DOM is never free, and keeping performance costs to a minimum is always a good idea
+This is how you kill the snake: Either hit a wall or touch itself
 ```js
-function render(leads) {
-    let listItems = ""
-    for (let i = 0; i < leads.length; i++) {
-        listItems += `
-            <li>
-                <a target='_blank' href='${leads[i]}'>
-                    ${leads[i]}
-                </a>
-            </li>
-        `
+function move() {
+    if (
+        (currentSnake[0] + width >= width*width && direction === width) || //if snake has hit bottom
+        (currentSnake[0] % width === width-1 && direction === 1) || //if snake has hit right wall
+        (currentSnake[0] % width === 0 && direction === -1) || //if snake has hit left wall
+        (currentSnake[0] - width < 0 && direction === -width) || //if snake has hit top
+        squares[currentSnake[0] + direction].classList.contains('snake')
+    ){
+        lostMsg.style.display = "block"
+        return clearInterval(timerId)
     }
-    ulEl.innerHTML = listItems
+```
+
+Controlling the snake via keypad makes use of keyCode values
+```js
+// 39 is right arrow
+// 38 is for the up arrow
+// 37 is for the left arrow
+// 40 is for the down arrow
+
+function control(e) {
+    if (e.keyCode === 39) {
+        console.log('right pressed')
+        direction = 1
+    } else if (e.keyCode === 38) {
+        console.log('up pressed')
+        direction = -width
+    } else if (e.keyCode === 37) {
+        console.log('left pressed')
+        direction = -1
+    } else if (e.keyCode === 40) {
+        console.log('down pressed')
+        direction = +width
+    }
 }
-```
-Grabbing the current tab on chrome is much easier than it looks. Interesting is that how it actually make sence to have a tab be checked at the same time for "active" and currentWindow status. Maybe you have two broswers open... you want to select the tab you are using, not the one on the background.
-```js
-tabBtn.addEventListener("click", function(){    
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-        myLeads.push(tabs[0].url)
-        localStorage.setItem("myLeads", JSON.stringify(myLeads) )
-        render(myLeads)
-    })
-})
-```
-This saves the Leads after the tab is closed. Allowing for a much better extension. You don't have to keep it open in order to maintain the saved Leads.
-```js
-localStorage.setItem("myLeads", JSON.stringify(myLeads) )
+document.addEventListener('keyup', control)
 ```
 
 ### Continued development
 
-The course is getting more and more interesting. I'm very surprised how educational coding a chrome extension (witha real world use) can be.
+Maybe I'll add a better lose state, but for now reseting the game is challenging enough
 
 
 ### Useful resources
 
-- [Select input color change](https://stackoverflow.com/questions/43427993/change-the-color-of-a-input-field-when-selected?rq=1) - Quick and sweet CSS trick
-- [.value](https://stackoverflow.com/questions/11563638/how-do-i-get-the-value-of-text-input-field-using-javascript) - This is always gonna be there. Grabbing the actual value the user is inputting on the browser. This will become second nature and it is nice to know how it works
-- [Clear textbox JavaScript](https://stackoverflow.com/questions/4135818/how-to-clear-a-textbox-using-javascript) - Very rarely we want the input field to keep what was just saved
-- [Open Link on another tab](https://www.freecodecamp.org/news/how-to-use-html-to-open-link-in-new-tab/) - target="_blank"
-- [Double click Event](https://techstacker.com/how-to-detect-double-clicks-with-vanilla-javascript/) - To avoid losing all your leads but accident, delete checks for double click before clearing localStorage
-- [Select current Tab Chrome](https://stackoverflow.com/questions/6718256/how-do-you-use-chrome-tabs-getcurrent-to-get-the-page-object-in-a-chrome-extensi) - Easier to go on SO than to go to the google official explanation
+- [Make div with JavaScript](https://www.techiedelight.com/dynamically-create-div-javascript/#:~:text=1.,div%3E%20element%20to%20another%20container.) - Quick and sweet CSS trick
+- [keyCode](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) - keyCode won;t be good for long... and what to do about it
+- [forEach](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach) - Sure it seems easy, until you try it
 
 ## Author
 
@@ -135,6 +131,6 @@ The course is getting more and more interesting. I'm very surprised how educatio
 
 ## Acknowledgments
 
-
+Thanks for hte people in Vercel for telling me what to delete to make this deployment work
 
 
